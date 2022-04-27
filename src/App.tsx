@@ -11,6 +11,8 @@ function App() {
             );
             if (response.status === 500)
                 setFilm("Oops… something went wrong, try again 🤕");
+            else if (response.status === 418)
+                setFilm("418 I'm a tea pot 🫖, silly");
             else {
                 let result = await response.json();
                 setFilm(result[0].title);

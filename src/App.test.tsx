@@ -42,3 +42,14 @@ test("App handles the server error code 500 from the API fetch", async () => {
     );
     expect(film).toBeInTheDocument();
 });
+
+test("App handles the server error code 418 from the API fetch", async () => {
+    server.use(
+        rest.get("https://ghibliapi.herokuapp.com/films", (req, res, ctx) => {
+            return res(ctx.status(418));
+        })
+    );
+    render(<App />);
+    let film = await screen.findByText(/418 I'm a tea pot 🫖, silly/i);
+    expect(film).toBeInTheDocument();
+});
