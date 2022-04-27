@@ -1,9 +1,31 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import App from "./App";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+const server = setupServer(
+    rest.get("https://ghibliapi.herokuapp.com/films", (req, res, ctx) => {
+        return res(
+            ctx.json([
+                {
+                    id: "2baf70d1-42bb-4437-b551-e5fed5a87abe",
+                    title: "Castle in the Sky",
+                    original_title: "天空の城ラピュタ",
+                    original_title_romanised: "Tenkū no shiro Rapyuta",
+                    image: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/npOnzAbLh6VOIu3naU5QaEcTepo.jpg",
+                },
+            ])
+        );
+    })
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+test("Check first film name is rendered on the screen", async () => {
+    render(<App />);
+    let film = await screen.findByText("Castle in the Sky");
+    expect(film).toBeInTheDocument();
 });
