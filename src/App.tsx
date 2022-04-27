@@ -7,10 +7,14 @@ function App() {
     useEffect(() => {
         async function getFirstFilm() {
             const response = await fetch(
-                `https://ghibliapi.herokuapp.com/films`
+                `https://ghibliapi.herokuapp.com/films/`
             );
-            let result = await response.json();
-            setFilm(result[0].title);
+            if (response.status === 500)
+                setFilm("Oops… something went wrong, try again 🤕");
+            else {
+                let result = await response.json();
+                setFilm(result[0].title);
+            }
         }
         getFirstFilm();
     }, []);

@@ -29,3 +29,16 @@ test("Check first film name is rendered on the screen", async () => {
     let film = await screen.findByText("Castle in the Sky");
     expect(film).toBeInTheDocument();
 });
+
+test("App handles the server error code 500 from the API fetch", async () => {
+    server.use(
+        rest.get("https://ghibliapi.herokuapp.com/films", (req, res, ctx) => {
+            return res(ctx.status(500));
+        })
+    );
+    render(<App />);
+    let film = await screen.findByText(
+        /Oops… something went wrong, try again 🤕/i
+    );
+    expect(film).toBeInTheDocument();
+});
